@@ -4,12 +4,13 @@ import { User } from './user.model';
 import { IUserService } from './user.interface';
 import { UserRegisterDto } from 'src/dto/user.register.dto';
 import { InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class UserService implements IUserService {
   readonly #logger: Logger = new Logger(UserService.name);
 
-  constructor(private readonly repo: Model<User>) {}
+  constructor(@InjectModel(User.name) private readonly repo: Model<User>) {}
 
   async getUserById(id: string): Promise<User> {
     try {

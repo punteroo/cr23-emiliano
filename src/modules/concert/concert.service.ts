@@ -3,12 +3,15 @@ import { IConcertService } from './concert.interface';
 import { Concert, ConcertScenario } from './concert.model';
 import { Model } from 'mongoose';
 import { InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class ConcertService implements IConcertService {
   readonly #logger: Logger = new Logger(ConcertService.name);
 
-  constructor(private readonly repo: Model<Concert>) {}
+  constructor(
+    @InjectModel(Concert.name) private readonly repo: Model<Concert>,
+  ) {}
 
   async fetchAllConcerts(): Promise<Concert[]> {
     try {

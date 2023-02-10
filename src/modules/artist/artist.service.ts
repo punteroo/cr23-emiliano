@@ -3,12 +3,13 @@ import { Model, isValidObjectId } from 'mongoose';
 import { Artist } from './artist.model';
 import { IArtistService } from './artist.interface';
 import { NotFoundException } from '@nestjs/common/exceptions';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class ArtistService implements IArtistService {
   readonly #logger: Logger = new Logger(ArtistService.name);
 
-  constructor(private readonly repo: Model<Artist>) {}
+  constructor(@InjectModel(Artist.name) private readonly repo: Model<Artist>) {}
 
   async fetchArtists(): Promise<Artist[]> {
     return await this.repo.find({});

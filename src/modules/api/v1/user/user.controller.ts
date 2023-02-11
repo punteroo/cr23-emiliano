@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ParseBoolPipe } from '@nestjs/common/pipes';
 import { Request } from 'express';
+import { Types } from 'mongoose';
 import { JwtAdminGuard } from 'src/auth/admin.guard';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 import { ConcertExistsPipe } from 'src/custom/concert.exists.pipe';
@@ -56,5 +57,13 @@ export class UserController {
     const user = req.user as UserDto;
 
     return await this.service.setConcertPreference(user._id, concertId, state);
+  }
+
+  @Get('/me/calendar')
+  @UseGuards(JwtAuthGuard)
+  async getMyCalendar(@Req() req: Request): Promise<string> {
+    const user = req.user as UserDto;
+
+    return await this.service.generateCalendar(new Types.ObjectId(user._id));
   }
 }

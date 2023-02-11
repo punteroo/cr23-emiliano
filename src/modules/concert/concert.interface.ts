@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { Concert, ConcertScenario } from './concert.model';
 
 export interface IConcertService {
@@ -12,20 +13,20 @@ export interface IConcertService {
   /**
    * Fetches a concert by its ID.
    *
-   * @param {string} id The ID of the concert.
+   * @param {Types.ObjectId} id The ID of the concert.
    *
    * @returns {Promise<Concert>} The concert.
    */
-  fetchConcertById(id: string): Promise<Concert>;
+  fetchConcertById(id: Types.ObjectId): Promise<Concert>;
 
   /**
    * Finds concerts by their artist.
    *
-   * @param {string} artistId The ID of the artist.
+   * @param {Types.ObjectId} artistId The ID of the artist.
    *
    * @returns {Promise<Concert[]>} The concerts where this artist performs in.
    */
-  fetchConcertsByArtist(artistId: string): Promise<Concert[]>;
+  fetchConcertsByArtist(artistId: Types.ObjectId): Promise<Concert[]>;
 
   /**
    * Finds concerts by their venue.

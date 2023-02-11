@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IConcertService } from './concert.interface';
 import { Concert, ConcertScenario } from './concert.model';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -15,25 +15,25 @@ export class ConcertService implements IConcertService {
 
   async fetchAllConcerts(): Promise<Concert[]> {
     try {
-      return await this.repo.find({});
+      return await this.repo.find({}).populate('artist');
     } catch (e) {
       this.#logger.error(`Failed to fetch all concerts: ${e}`);
       throw new InternalServerErrorException(e);
     }
   }
 
-  async fetchConcertById(id: string): Promise<Concert> {
+  async fetchConcertById(id: Types.ObjectId): Promise<Concert> {
     try {
-      return await this.repo.findById(id);
+      return await this.repo.findById(id).populate('artist');
     } catch (e) {
       this.#logger.error(`Failed to fetch concert with ID ${id}: ${e}`);
       throw new InternalServerErrorException(e);
     }
   }
 
-  async fetchConcertsByArtist(artistId: string): Promise<Concert[]> {
+  async fetchConcertsByArtist(artistId: Types.ObjectId): Promise<Concert[]> {
     try {
-      return await this.repo.find({ artist: artistId });
+      return await this.repo.find({ artist: artistId }).populate('artist');
     } catch (e) {
       this.#logger.error(
         `Failed to fetch concerts by artist ID ${artistId}: ${e}`,
@@ -44,7 +44,9 @@ export class ConcertService implements IConcertService {
 
   async fetchConcertsByVenue(scenario: ConcertScenario): Promise<Concert[]> {
     try {
-      return await this.repo.find({ scenario });
+      return await this.repo
+        .find({ scenario: { $regex: scenario, $options: 'i' } })
+        .populate('artist');
     } catch (e) {
       this.#logger.error(`Failed to fetch concerts by venue ${scenario}: ${e}`);
       throw new InternalServerErrorException(e);
@@ -53,10 +55,12 @@ export class ConcertService implements IConcertService {
 
   async fetchConcertsByTimeRange(start: Date, end: Date): Promise<Concert[]> {
     try {
-      return await this.repo.find({
-        startsAt: { $gte: start, $lte: end },
-        endsAt: { $gte: start, $lte: end },
-      });
+      return await this.repo
+        .find({
+          startsAt: { $gte: start, $lte: end },
+          endsAt: { $gte: start, $lte: end },
+        })
+        .populate('artist');
     } catch (e) {
       this.#logger.error(
         `Failed to fetch concerts by time range ${start.toISOString()} - ${end.toISOString()}: ${e}`,

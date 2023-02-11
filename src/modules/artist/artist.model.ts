@@ -10,6 +10,9 @@ export class Artist extends Document {
   @Prop({ type: String })
   /** A representative image URL for this band. */
   image: string;
+
+  @Prop({ type: Number, required: false })
+  legacyId: number;
 }
 
 export const ArtistSchema = SchemaFactory.createForClass(Artist);

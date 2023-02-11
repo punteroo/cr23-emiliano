@@ -13,6 +13,10 @@ export class User {
   @Prop({ type: String, required: true })
   /** The user's email address. */
   email: string;
+
+  @Prop({ type: Boolean, required: false, default: false })
+  /** Whether the user is an admin or not. */
+  admin?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

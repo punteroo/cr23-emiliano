@@ -8,5 +8,6 @@ import { Concert, ConcertSchema } from './concert.model';
     MongooseModule.forFeature([{ name: Concert.name, schema: ConcertSchema }]),
   ],
   providers: [ConcertService],
+  exports: [ConcertService],
 })
 export class ConcertModule {}

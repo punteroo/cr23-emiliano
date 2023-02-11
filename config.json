@@ -1,3 +1,4 @@
 {
     "mongoDb": ""
+    "secret": "test123"
 }

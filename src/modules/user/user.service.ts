@@ -7,6 +7,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDto } from 'src/dto/user.dto';
 import { UserPreference } from './user.preference.model';
+import { EventAttributes, createEvents } from 'ics';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -99,6 +100,63 @@ export class UserService implements IUserService {
       this.#logger.error(
         `Failed to set concert ${concertId} preference on ${userId}: ${e}`,
       );
+      throw new InternalServerErrorException(e);
+    }
+  }
+
+  async generateCalendar(id: Types.ObjectId): Promise<string> {
+    // Fetch this user's preferences.
+    try {
+      const preferences = await this.preferences
+        .find({
+          user: id,
+          preferred: true,
+        })
+        .populate({
+          path: 'concert',
+          populate: {
+            path: 'artist',
+          },
+        })
+        .populate('user');
+
+      // Map all preferences to an array of events.
+      const events: EventAttributes[] = preferences.map((p) => {
+        return {
+          start: [
+            p.concert.startsAt.getUTCFullYear(),
+            p.concert.startsAt.getUTCMonth(),
+            p.concert.startsAt.getUTCDate(),
+            p.concert.startsAt.getUTCHours(),
+            p.concert.startsAt.getUTCMinutes(),
+          ],
+          startInputType: 'utc',
+          duration: {
+            hours:
+              p.concert.endsAt.getUTCHours() -
+                p.concert.startsAt.getUTCHours() ?? 0,
+            minutes:
+              p.concert.endsAt.getUTCMinutes() -
+              p.concert.startsAt.getUTCMinutes(),
+          },
+          title: p.concert.artist.name,
+          organizer: {
+            name: `Cosquín Rock ${p.concert.startsAt.getFullYear()}`,
+            email: 'info@edenentradas.com.ar',
+          },
+          status: 'CONFIRMED',
+          attendees: [{ name: p.user.name, email: p.user.email }],
+        };
+      });
+
+      // Generate the calendar.
+      const { error, value: calendar } = createEvents(events);
+
+      if (error) throw error;
+
+      return calendar;
+    } catch (e) {
+      this.#logger.error(`Failed to generate calendar for user ${id}: ${e}`);
       throw new InternalServerErrorException(e);
     }
   }

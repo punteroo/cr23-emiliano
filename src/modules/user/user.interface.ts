@@ -1,5 +1,6 @@
 import { UserRegisterDto } from 'src/dto/user.register.dto';
 import { UserDto } from 'src/dto/user.dto';
+import { Types } from 'mongoose';
 
 export interface IUserService {
   /**
@@ -42,4 +43,13 @@ export interface IUserService {
     concertId: string,
     preferred: boolean,
   ): Promise<UserDto>;
+
+  /**
+   * Generates an iCalendar (ics) file with all the preferred events currently set on a user.
+   *
+   * @param {Types.ObjectId} id The user's ObjectId reference.
+   *
+   * @returns {Promise<string>} The iCalendar file.
+   */
+  generateCalendar(id: Types.ObjectId): Promise<string>;
 }

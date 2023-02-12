@@ -40,7 +40,12 @@ export class UserService implements IUserService {
       // Find the user's preferences.
       const preferences = await this.preferences
         .find({ user: user._id })
-        .populate('concert');
+        .populate({
+          path: 'concert',
+          populate: {
+            path: 'artist',
+          },
+        });
 
       return {
         ...user.toJSON(),

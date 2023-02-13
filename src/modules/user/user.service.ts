@@ -145,6 +145,7 @@ export class UserService implements IUserService {
               p.concert.startsAt.getUTCMinutes(),
           },
           title: p.concert.artist.name,
+          description: `Escenario ${p.concert.scenario}`,
           organizer: {
             name: `Cosquín Rock ${p.concert.startsAt.getFullYear()}`,
             email: 'info@edenentradas.com.ar',

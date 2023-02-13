@@ -130,7 +130,7 @@ export class UserService implements IUserService {
         return {
           start: [
             p.concert.startsAt.getUTCFullYear(),
-            p.concert.startsAt.getUTCMonth(),
+            p.concert.startsAt.getUTCMonth() + 1,
             p.concert.startsAt.getUTCDate(),
             p.concert.startsAt.getUTCHours(),
             p.concert.startsAt.getUTCMinutes(),

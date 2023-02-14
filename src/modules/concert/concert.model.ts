@@ -12,10 +12,19 @@ export enum ConcertScenario {
   PARAGUAY = 'Paraguay',
 }
 
+/** The day the concert is played (indistinct of its date) */
+export enum ConcertDay {
+  SATURDAY = 18,
+  SUNDAY = 19,
+}
+
 @Schema({ strict: true, versionKey: false })
 export class Concert extends Document {
   @Prop({ type: Types.ObjectId, ref: Artist.name })
   artist: Artist;
+
+  @Prop({ enum: ConcertDay, required: false })
+  day: ConcertDay;
 
   @Prop({ type: Date, required: true })
   startsAt: Date;
